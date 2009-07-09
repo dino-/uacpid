@@ -4,11 +4,23 @@
 
 import Control.Monad ( forever )
 import Network.Socket
+import System.Environment.FindBin
 import System.IO
+
+import Uacpid.Conf
 
 
 main :: IO ()
 main = do
+   conf <- getConf
+
+   print conf
+
+   print =<< getProgPath
+
+   -- Set up logging
+
+{-
    -- Open the UNIX domain socket
    s <- socket AF_UNIX Stream defaultProtocol
    connect s $ SockAddrUnix "/var/run/acpid.socket"
@@ -21,3 +33,4 @@ main = do
    forever $ do
       line <- hGetLine hdl
       print line
+-}
