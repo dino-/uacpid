@@ -5,19 +5,19 @@
 import Control.Monad ( forever )
 import Network.Socket
 import System.IO
+import System.Log
 
 import Uacpid.Conf
+import Uacpid.Log ( initLogging, logM )
 
 
 main :: IO ()
 main = do
    conf <- getConf
+   initLogging conf
 
-   print conf
+   logM NOTICE "uacpid daemon started"
 
-   -- Set up logging
-
-{-
    -- Open the UNIX domain socket
    s <- socket AF_UNIX Stream defaultProtocol
    connect s $ SockAddrUnix "/var/run/acpid.socket"
@@ -29,5 +29,7 @@ main = do
    -- Read lines from it
    forever $ do
       line <- hGetLine hdl
-      print line
--}
+      logM INFO $ "received from acpid: " ++ line
+
+   -- FIXME This never gets called when we ctrl-c
+   logM NOTICE "uacpid daemon stopped"

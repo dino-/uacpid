@@ -39,9 +39,10 @@ getConf = do
    loadedConf <- liftM parseToMap $ readFile confFilePath
 
    -- Replace the log path with an absolute one using $HOME
-   let realConf = insertWith (</>) "logDir" homeDir loadedConf
+   let realConf = insertWith (</>) "logPath" homeDir loadedConf
 
    -- First time log directory creation
-   createDirectoryIfMissing True $ fromJust $ lookup "logDir" realConf
+   let logDir = dropFileName $ fromJust $ lookup "logPath" realConf
+   createDirectoryIfMissing True logDir
 
    return realConf
