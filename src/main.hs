@@ -4,7 +4,6 @@
 
 import Control.Monad ( forever )
 import Network.Socket
-import System.Environment.FindBin
 import System.IO
 
 import Uacpid.Conf
@@ -15,8 +14,6 @@ main = do
    conf <- getConf
 
    print conf
-
-   print =<< getProgPath
 
    -- Set up logging
 

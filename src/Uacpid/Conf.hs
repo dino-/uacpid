@@ -8,24 +8,15 @@ module Uacpid.Conf
    where
 
 import Control.Monad
-import Data.Map ( fromList, insertWith )
+import Data.Map ( insertWith, lookup )
+import Data.Maybe
 import Fez.Data.Conf
+import Prelude hiding ( lookup )
 import System.Directory
 import System.Environment
 import System.FilePath
---import System.IO
 
-
-{- NOTE: This should be kept in sync with the commented-out defaults
-   in resources/default-uacpid.conf
-   This file is copied to ~/.uacpid/uacpid.conf on first run and
-   serves as documentation of default values used here.
--}
-defaultConf :: ConfMap
-defaultConf = fromList
-   [ ( "logDir", "var/log" )
-   , ( "logPriority", "WARNING" )
-   ]
+import Paths_uacpid
 
 
 getConf :: IO ConfMap
@@ -35,20 +26,22 @@ getConf = do
    let confDir = homeDir </> ".uacpid"
    let confFilePath = confDir </> "uacpid.conf"
 
+   -- First time conf directory creation
    createDirectoryIfMissing True confDir
 
-   -- Load or create conf file $HOME/.uacpid/uacpid.conf
+   -- Create the conf for the first time if necessary
    confExists <- doesFileExist confFilePath
-   origConf <- if confExists
-      then liftM parseToMap $ readFile confFilePath
-      else do
-         copyFile
-            -- FIXME This must be changed, very bad
-            "/home/dino/dev/uacpid/trunk/resources/default-uacpid.conf"
-            confFilePath
-         return defaultConf
+   unless confExists $ do
+      defaultConfFilePath <- getDataFileName "default-uacpid.conf"
+      copyFile defaultConfFilePath confFilePath
+
+   -- Load the conf
+   loadedConf <- liftM parseToMap $ readFile confFilePath
 
    -- Replace the log path with an absolute one using $HOME
-   let realConf = insertWith (</>) "logDir" homeDir origConf
+   let realConf = insertWith (</>) "logDir" homeDir loadedConf
+
+   -- First time log directory creation
+   createDirectoryIfMissing True $ fromJust $ lookup "logDir" realConf
 
    return realConf
