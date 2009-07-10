@@ -69,8 +69,6 @@ main = do
    initLogging conf
 
    logM NOTICE "uacpid daemon started"
-
-   logM NOTICE "uacpid daemon started"
    logM NOTICE $ "logging level " ++
       (fromJust $ lookup "logPriority" conf)
 

@@ -3,7 +3,7 @@
 -- Author: Dino Morelli <dino@ui3.info>
 
 module Uacpid.Log
-   ( initLogging, logM )
+   ( initLogging, logM, logTest )
    where
 
 import Control.Monad ( liftM )
@@ -34,7 +34,7 @@ formattedDate formatString =
 logM :: Priority -> String -> IO ()
 logM pri msg = do
    fd <- formattedDate "%Y-%m-%d %H:%M:%S %Z"
-   let fullMsg = printf "%s %s> %s" fd (show pri) msg
+   let fullMsg = printf "%s %7s> %s" fd (show pri) msg
    L.logM rootLoggerName pri fullMsg
 
 
@@ -48,3 +48,14 @@ initLogging conf = do
    logHandler <- fileHandler logPath level
    updateGlobalLogger rootLoggerName (setHandlers [logHandler])
    updateGlobalLogger rootLoggerName (setLevel level)
+
+
+{- Test function to generate every kind of log message we use
+-}
+logTest :: IO ()
+logTest = do
+   logM DEBUG "log test message 1 of 5"
+   logM INFO "log test message 2 of 5"
+   logM NOTICE "log test message 3 of 5"
+   logM WARNING "log test message 4 of 5"
+   logM ERROR "log test message 5 of 5"
