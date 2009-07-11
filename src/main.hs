@@ -23,18 +23,20 @@ import Uacpid.Log ( initLogging, logM )
 lookupE :: (MonadError String m) =>
    String -> Map String a -> m a
 lookupE k m = maybe
-   (throwError ("required key " ++ k ++ " not found in config"))
+   (throwError ("Required key " ++ k ++ " not found in config"))
    return $ lookup k m
 
 
 openAcpidSocket :: (MonadError String m, MonadIO m) =>
    ConfMap -> m Handle
 openAcpidSocket conf = do
+   liftIO $ logM NOTICE "Establishing connection to acpid's socket..."
+
    acpidSocketPath <- lookupE "acpidSocket" conf
 
    exists <- liftIO $ doesFileExist acpidSocketPath
    unless exists $
-      throwError $ "socket " ++ acpidSocketPath ++ " does not exist. Make sure acpid is installed, is running, and that this path is correct. This config setting is in ~/.uacpid/uacpid.conf under the key acpidSocket"
+      throwError $ "Socket " ++ acpidSocketPath ++ " does not exist. Make sure acpid is installed, is running, and that this path is correct. This config setting is in ~/.uacpid/uacpid.conf under the key acpidSocket"
 
    hdl <- liftIO $ do
       -- Open the UNIX domain socket
@@ -52,9 +54,12 @@ openAcpidSocket conf = do
 
 -- Read lines from the socket and do something with them
 listenAcpi :: Handle -> IO ()
-listenAcpi hdl = forever $ do
-   line <- hGetLine hdl
-   logM INFO $ "received from acpid: " ++ line
+listenAcpi hdl = do
+   logM NOTICE "Connection established, listening now"
+
+   forever $ do
+      line <- hGetLine hdl
+      logM INFO $ "Received from acpid: " ++ line
 
 
 exitFail :: String -> IO ()
@@ -69,7 +74,7 @@ main = do
    initLogging conf
 
    logM NOTICE "uacpid daemon started"
-   logM NOTICE $ "logging level " ++
+   logM NOTICE $ "Logging level " ++
       (fromJust $ lookup "logPriority" conf)
 
    eHdl <- runErrorT $ openAcpidSocket conf
