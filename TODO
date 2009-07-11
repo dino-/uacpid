@@ -1,1 +1,13 @@
 - Make arch PKGBUILD, see cabal2arch
+
+- Can some of the code in main.hs be factored into other modules? Maybe Uacpid.Signals to start with
+
+- Various types of failures in event handler scripts will generate WARNING priority log messages
+
+- If the event handler script's shell process fails, we need to log the exit code. WARNING priority, of course.
+
+- This project needs a real man page
+
+- Need signal support for sigHUP. What this means is being able to stop and restart the socket connection parts. Some redesign, I think.
+
+- What event scripts will ship with this? Can we do any kind of generic example one like acpid's anything handler? What would anything do?
