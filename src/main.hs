@@ -41,7 +41,7 @@ openAcpidSocket conf = do
    unless exists $
       throwError $ "Socket " ++ acpidSocketPath ++ " does not exist. Make sure acpid is installed, is running, and that this path is correct. This config setting is in ~/.uacpid/uacpid.conf under the key acpidSocket"
 
-   hdl <- liftIO $ do
+   liftIO $ do
       -- Open the UNIX domain socket
       s <- socket AF_UNIX Stream defaultProtocol
       connect s $ SockAddrUnix acpidSocketPath
@@ -51,8 +51,6 @@ openAcpidSocket conf = do
       hSetBuffering h LineBuffering
 
       return h
-
-   return hdl
 
 
 -- Read lines from the socket and do something with them
