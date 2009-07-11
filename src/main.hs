@@ -63,7 +63,7 @@ listenAcpi mvRunStatus hdl = do
    stopNow <- readMVar mvRunStatus
 
    unless stopNow $ do
-      -- No blocking unless data is ready
+      -- No blocking unless the socket is ready with a line for us
       ready <- hReady hdl
       when ready $ do
          line <- hGetLine hdl
