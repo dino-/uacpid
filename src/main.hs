@@ -9,7 +9,6 @@ import Control.Concurrent.MVar
 import Control.Monad.Error
 import Data.Map
 import Data.Maybe
-import Fez.Data.Conf
 import Prelude hiding ( lookup )
 import Network.Socket
 import System.Directory

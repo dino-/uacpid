@@ -19,6 +19,6 @@ data-files:          default-uacpid.conf
 executable           uacpid
    main-is:          main.hs
    hs-source-dirs:   src
-   build-depends:    base, containers, directory, fez-conf, filepath, 
-                     hslogger, mtl, network, old-locale, time, unix
+   build-depends:    base, containers, directory, filepath, hslogger, 
+                     mtl, network, old-locale, regex-compat, time, unix
    ghc-options:      -Wall

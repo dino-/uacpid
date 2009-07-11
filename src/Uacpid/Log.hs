@@ -12,13 +12,14 @@ import Data.Maybe
 import Data.Time.Clock ( getCurrentTime )
 import Data.Time.Format ( formatTime )
 import Data.Time.LocalTime ( utcToLocalZonedTime )
-import Fez.Data.Conf
 import Prelude hiding ( lookup )
 import System.Locale ( defaultTimeLocale )
 import System.Log.Handler.Simple ( fileHandler )
 import qualified System.Log.Logger as L ( logM )
 import           System.Log.Logger hiding ( logM )
 import Text.Printf
+
+import Uacpid.Conf
 
 
 -- Format the time right now given a formatting string

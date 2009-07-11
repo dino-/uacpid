@@ -3,21 +3,54 @@
 -- Author: Dino Morelli <dino@ui3.info>
 
 module Uacpid.Conf
-   ( getConf
+   ( ConfMap
+   , getConf
    , getConfDir
+   , parseToMap
    )
    where
 
 import Control.Monad
-import Data.Map ( insertWith, lookup )
+import Data.Map hiding ( map )
 import Data.Maybe
-import Fez.Data.Conf
 import Prelude hiding ( lookup )
 import System.Directory
 import System.Environment
 import System.FilePath
+import Text.Regex ( matchRegex, mkRegex )
 
 import Paths_uacpid
+
+
+type ConfMap = Map String String
+
+
+{- |
+   Parse config file data into a simple (Map String String).
+
+   For example, this:
+
+   >  --- file start ---
+   >  foo=one
+   >  # a comment
+   >
+   >  bar
+   >  baz-blorp=2
+   >  --- file end ---
+
+   becomes:
+
+   >  fromList [("foo","one"),("bar",""),("baz-blorp","2")]
+
+   Comments (prefixed with #) and blank lines in the config file 
+   are discarded.
+-}
+parseToMap :: String -> ConfMap
+parseToMap entireConf =
+   fromList $ map (\[k, v] -> (k, v))
+      $ catMaybes $ map (matchRegex re) $ lines entireConf
+   where
+      re = mkRegex "^([^#][^=]*)=?(.*)"
 
 
 getHomeDir :: IO String
