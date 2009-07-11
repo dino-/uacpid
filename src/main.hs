@@ -4,6 +4,8 @@
 
 {-# LANGUAGE FlexibleContexts #-}
 
+import Control.Concurrent
+import Control.Concurrent.MVar
 import Control.Monad.Error
 import Data.Map
 import Data.Maybe
@@ -14,6 +16,7 @@ import System.Directory
 import System.Exit
 import System.IO
 import System.Log
+import System.Posix.Signals
 
 import Uacpid.Conf
 import Uacpid.Log ( initLogging, logM )
@@ -53,13 +56,20 @@ openAcpidSocket conf = do
 
 
 -- Read lines from the socket and do something with them
-listenAcpi :: Handle -> IO ()
-listenAcpi hdl = do
-   logM NOTICE "Connection established, listening now"
+listenAcpi :: MVar Bool -> Handle -> IO ()
+listenAcpi mvRunStatus hdl = do
+   stopNow <- readMVar mvRunStatus
 
-   forever $ do
-      line <- hGetLine hdl
-      logM INFO $ "Received from acpid: " ++ line
+   unless stopNow $ do
+      -- No blocking unless data is ready
+      ready <- hReady hdl
+      when ready $ do
+         line <- hGetLine hdl
+         logM INFO $ "Received from acpid: " ++ line
+
+      -- Wait a bit, try again
+      threadDelay 250000
+      listenAcpi mvRunStatus hdl
 
 
 exitFail :: String -> IO ()
@@ -68,17 +78,33 @@ exitFail errMsg = do
    exitWith $ ExitFailure 1
 
 
+exitHandler :: MVar Bool -> IO ()
+exitHandler mvRunStatus = do
+   -- We don't care what it is, we just want to take it from everyone else
+   takeMVar mvRunStatus
+
+   logM NOTICE "uacpid daemon stopped"
+
+   -- Make note in the state to stop the other thread
+   putMVar mvRunStatus True
+
+
 main :: IO ()
 main = do
    conf <- getConf
    initLogging conf
+
+   mvRunStatus <- newMVar False
+
+   -- Install signal handling
+   mapM_ (\signal -> installHandler signal 
+      (Catch $ exitHandler mvRunStatus) Nothing) [sigINT, sigTERM]
 
    logM NOTICE "uacpid daemon started"
    logM NOTICE $ "Logging level " ++
       (fromJust $ lookup "logPriority" conf)
 
    eHdl <- runErrorT $ openAcpidSocket conf
-   either exitFail listenAcpi eHdl
+   either exitFail (listenAcpi mvRunStatus) eHdl
 
-   -- FIXME This never gets called when we ctrl-c
-   logM NOTICE "uacpid daemon stopped"
+   exitWith $ ExitSuccess

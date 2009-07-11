@@ -20,5 +20,5 @@ executable           uacpid
    main-is:          main.hs
    hs-source-dirs:   src
    build-depends:    base, containers, directory, fez-conf, filepath, 
-                     hslogger, mtl, network, old-locale, time
+                     hslogger, mtl, network, old-locale, time, unix
    ghc-options:      -Wall
