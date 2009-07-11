@@ -34,7 +34,7 @@ openAcpidSocket conf = do
 
    exists <- liftIO $ doesFileExist acpidSocketPath
    unless exists $
-      throwError $ "socket not present at " ++ acpidSocketPath
+      throwError $ "socket " ++ acpidSocketPath ++ " does not exist. Make sure acpid is installed, is running, and that this path is correct. This config setting is in ~/.uacpid/uacpid.conf under the key acpidSocket"
 
    hdl <- liftIO $ do
       -- Open the UNIX domain socket
