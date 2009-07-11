@@ -15,7 +15,8 @@ Start this daemon with the helper script in bin/uacpid-dev
 This will use a custom HOME environment that points to dev/home/
 And will keep it from looking at your real $HOME/.uacpid/
 
-Start/stop for developement like this:
-
+Start in developement like this:
    $ bin/uacpid-dev &
-   $ killall uacpid
+
+Stop in developement like this, use the full path so only the development execution is killed. Or get the pid and use kill:
+   $ killall dist/build/uacpid/uacpid
