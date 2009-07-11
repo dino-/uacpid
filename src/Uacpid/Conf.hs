@@ -41,6 +41,10 @@ getConf = do
    -- Replace the log path with an absolute one using $HOME
    let realConf = insertWith (</>) "logPath" homeDir loadedConf
 
+   -- While we're here doing first time things, make sure there's
+   -- an events dir
+   createDirectoryIfMissing True $ confDir </> "events"
+
    -- First time log directory creation
    let logDir = dropFileName $ fromJust $ lookup "logPath" realConf
    createDirectoryIfMissing True logDir
