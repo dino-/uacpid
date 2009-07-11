@@ -4,6 +4,7 @@
 
 module Uacpid.Conf
    ( getConf
+   , getConfDir
    )
    where
 
@@ -19,11 +20,19 @@ import System.FilePath
 import Paths_uacpid
 
 
+getHomeDir :: IO String
+getHomeDir = getEnv "HOME"
+
+
+getConfDir :: IO String
+getConfDir = liftM (flip (</>) ".uacpid") getHomeDir
+
+
 getConf :: IO ConfMap
 getConf = do
    -- Construct some paths using $HOME
-   homeDir <- getEnv "HOME"
-   let confDir = homeDir </> ".uacpid"
+   homeDir <- getHomeDir
+   confDir <- getConfDir
    let confFilePath = confDir </> "uacpid.conf"
 
    -- First time conf directory creation
