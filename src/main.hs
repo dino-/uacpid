@@ -18,15 +18,9 @@ import System.Log
 import System.Posix.Signals
 
 import Uacpid.Conf
+import Uacpid.Control.Monad.Error
+import Uacpid.Events
 import Uacpid.Log ( initLogging, logM )
-
-
--- Lookup a key in a map in Error monad
-lookupE :: (MonadError String m) =>
-   String -> Map String a -> m a
-lookupE k m = maybe
-   (throwError ("Required key " ++ k ++ " not found in config"))
-   return $ lookup k m
 
 
 openAcpidSocket :: (MonadError String m, MonadIO m) =>
@@ -34,7 +28,7 @@ openAcpidSocket :: (MonadError String m, MonadIO m) =>
 openAcpidSocket conf = do
    liftIO $ logM NOTICE "Establishing connection to acpid's socket..."
 
-   acpidSocketPath <- lookupE "acpidSocket" conf
+   acpidSocketPath <- lookupEString "acpidSocket" conf
 
    exists <- liftIO $ doesFileExist acpidSocketPath
    unless exists $
@@ -95,6 +89,10 @@ main = do
    conf <- getConf
    initLogging conf
 
+   -- FIXME development code
+   loadEvents >>= logM DEBUG . show
+
+{-
    mvRunStatus <- newMVar False
 
    -- Install signal handling
@@ -109,3 +107,4 @@ main = do
    either exitFail (listenAcpi mvRunStatus) eHdl
 
    exitWith $ ExitSuccess
+-}
