@@ -3,7 +3,7 @@
 -- Author: Dino Morelli <dino@ui3.info>
 
 module Uacpid.Events
-   ( Event (..), loadEvents )
+   ( Handler (..), loadHandlers, executeHandlers )
    where
 
 import Control.Monad
@@ -13,36 +13,37 @@ import Data.Maybe
 import System.Directory
 import System.FilePath
 import System.Log
+import System.Process
+import Text.Regex ( matchRegex, mkRegex )
 
 import Uacpid.Conf ( getConfDir, parseToMap )
 import Uacpid.Control.Monad.Error
 import Uacpid.Log ( logM )
 
 
-data Event = Event
+data Handler = Handler
    { evName :: String
    , evEventRe :: String
    , evAction :: String
    }
-   deriving Show  -- FIXME
 
 
 lookupEventE name = lookupEWith
    (\j -> "Event handler " ++ name ++ ": key " ++ j ++ " not found")
 
 
-loadEvent :: (String, FilePath) -> IO (Maybe Event)
-loadEvent (name, path) = do
+loadHandler :: (String, FilePath) -> IO (Maybe Handler)
+loadHandler (name, path) = do
    -- Parse the event file into a map
    evMap <- liftM parseToMap $ readFile path
 
-   -- Extract data from it to make an Event, with error reporting
-   eitherStringEvent <- runErrorT $ do
-      event <- lookupEventE name "event" evMap
-      action <- lookupEventE name "action" evMap
-      return $ Event name event action
+   -- Extract data from it to make an Handler, with error reporting
+   eitherStringHandler <- runErrorT $ do
+      event <- lookupHandlerE name "event" evMap
+      action <- lookupHandlerE name "action" evMap
+      return $ Handler name event action
 
-   result <- case eitherStringEvent of
+   result <- case eitherStringHandler of
       Left emsg -> do
          logM WARNING emsg
          return Nothing
@@ -51,8 +52,8 @@ loadEvent (name, path) = do
    return result
 
 
-loadEvents :: IO [Event]
-loadEvents = do
+loadHandlers :: IO [Handler]
+loadHandlers = do
    confDir <- getConfDir
    let eventsDir = confDir </> "events"
 
@@ -70,14 +71,22 @@ loadEvents = do
    let eventPairs = map (\n -> (n, eventsDir </> n)) eventFiles
 
    -- Load these files and parse them
-   events <- liftM catMaybes $ mapM loadEvent eventPairs
+   events <- liftM catMaybes $ mapM loadHandler eventPairs
 
    let names = map evName events
 
    -- Log what we loaded for informational purposes
    if (null names)
       then logM NOTICE "No valid event handlers were found"
-      else logM NOTICE $ "Event handlers loaded: " ++
+      else logM NOTICE $ "Handlers loaded: " ++
          (intercalate " " names)
 
    return events
+
+
+executeHandlers :: String -> [Handler] -> IO ()
+executeHandlers acpiHandler es = do
+   let responders = filter (\e -> isJust $
+         matchRegex (mkRegex (evEventRe e)) acpiHandler) es
+
+   mapM_ (runCommand . evAction) responders

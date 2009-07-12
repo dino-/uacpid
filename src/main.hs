@@ -15,7 +15,7 @@ import System.Directory
 import System.Exit
 import System.IO
 import System.Log
-import System.Posix.Signals
+import System.Posix.Signals hiding ( Handler )
 
 import Uacpid.Conf
 import Uacpid.Control.Monad.Error
@@ -51,8 +51,8 @@ openAcpidSocket conf = do
 
 
 -- Read lines from the socket and do something with them
-listenAcpi :: MVar Bool -> Handle -> IO ()
-listenAcpi mvRunStatus hdl = do
+listenAcpi :: [Handler] -> MVar Bool -> Handle -> IO ()
+listenAcpi handlers mvRunStatus hdl = do
    stopNow <- readMVar mvRunStatus
 
    unless stopNow $ do
@@ -61,10 +61,11 @@ listenAcpi mvRunStatus hdl = do
       when ready $ do
          line <- hGetLine hdl
          logM INFO $ "Received from acpid: " ++ line
+         executeHandlers line handlers
 
       -- Wait a bit, try again
       threadDelay 250000
-      listenAcpi mvRunStatus hdl
+      listenAcpi handlers mvRunStatus hdl
 
 
 exitFail :: String -> IO ()
@@ -89,10 +90,8 @@ main = do
    conf <- getConf
    initLogging conf
 
-   -- FIXME development code
-   loadEvents >>= logM DEBUG . show
+   handlers <- loadHandlers
 
-{-
    mvRunStatus <- newMVar False
 
    -- Install signal handling
@@ -104,7 +103,6 @@ main = do
       (fromJust $ lookup "logPriority" conf)
 
    eHdl <- runErrorT $ openAcpidSocket conf
-   either exitFail (listenAcpi mvRunStatus) eHdl
+   either exitFail (listenAcpi handlers mvRunStatus) eHdl
 
    exitWith $ ExitSuccess
--}
