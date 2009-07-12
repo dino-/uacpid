@@ -74,8 +74,8 @@ exitFail errMsg = do
    exitWith $ ExitFailure 1
 
 
-exitHandler :: MVar Bool -> IO ()
-exitHandler mvRunStatus = do
+handleExitSignals :: MVar Bool -> IO ()
+handleExitSignals mvRunStatus = do
    -- We don't care what it is, we just want to take it from everyone else
    takeMVar mvRunStatus
 
@@ -83,6 +83,10 @@ exitHandler mvRunStatus = do
 
    -- Make note in the state to stop the other thread
    putMVar mvRunStatus True
+
+
+handleHupSignal :: IO ()
+handleHupSignal = logM DEBUG "sigHUP received"
 
 
 main :: IO ()
@@ -94,9 +98,10 @@ main = do
 
    mvRunStatus <- newMVar False
 
-   -- Install signal handling
+   -- Install signal handlers
    mapM_ (\signal -> installHandler signal 
-      (Catch $ exitHandler mvRunStatus) Nothing) [sigINT, sigTERM]
+      (Catch $ handleExitSignals mvRunStatus) Nothing) [sigINT, sigTERM]
+   installHandler sigHUP (Catch handleHupSignal) Nothing
 
    logM NOTICE "uacpid daemon started"
    logM NOTICE $ "Logging level " ++
