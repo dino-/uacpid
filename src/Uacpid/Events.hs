@@ -66,14 +66,18 @@ loadEvents = do
          [ isPrefixOf ".", isSuffixOf "~" ]))
       $ getDirectoryContents eventsDir
 
-   -- Log what we found for informational purposes
-   if (null eventFiles)
-      then logM NOTICE "No event handlers were found"
-      else logM NOTICE $ "Event handlers loaded: " ++
-         (intercalate " " eventFiles)
-
    -- Construct a list of (filename, /path/to/filename)
    let eventPairs = map (\n -> (n, eventsDir </> n)) eventFiles
 
-   -- Load them, this list is what we return to the caller
-   liftM catMaybes $ mapM loadEvent eventPairs
+   -- Load these files and parse them
+   events <- liftM catMaybes $ mapM loadEvent eventPairs
+
+   let names = map evName events
+
+   -- Log what we loaded for informational purposes
+   if (null names)
+      then logM NOTICE "No valid event handlers were found"
+      else logM NOTICE $ "Event handlers loaded: " ++
+         (intercalate " " names)
+
+   return events
