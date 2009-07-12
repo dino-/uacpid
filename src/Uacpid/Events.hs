@@ -2,6 +2,8 @@
 -- License: BSD3 (see LICENSE)
 -- Author: Dino Morelli <dino@ui3.info>
 
+{-# LANGUAGE FlexibleContexts #-}
+
 module Uacpid.Events
    ( Handler (..), loadHandlers, executeHandlers )
    where
@@ -16,7 +18,7 @@ import System.Log
 import System.Process
 import Text.Regex ( matchRegex, mkRegex )
 
-import Uacpid.Conf ( getConfDir, parseToMap )
+import Uacpid.Conf ( ConfMap, getConfDir, parseToMap )
 import Uacpid.Control.Monad.Error
 import Uacpid.Log ( logM )
 
@@ -28,8 +30,10 @@ data Handler = Handler
    }
 
 
-lookupEventE name = lookupEWith
-   (\j -> "Event handler " ++ name ++ ": key " ++ j ++ " not found")
+lookupHandlerE :: (MonadError String m) =>
+   String -> String -> ConfMap -> m String
+lookupHandlerE name = lookupEWith
+   (\j -> "Handler handler " ++ name ++ ": key " ++ j ++ " not found")
 
 
 loadHandler :: (String, FilePath) -> IO (Maybe Handler)
