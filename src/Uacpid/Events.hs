@@ -8,7 +8,6 @@ module Uacpid.Events
    ( Handler (..), loadHandlers, executeHandlers )
    where
 
-import Control.Monad
 import Control.Monad.Error
 import Data.List
 import Data.Maybe
