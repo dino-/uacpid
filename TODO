@@ -11,3 +11,5 @@
 - Need signal support for sigHUP. What this means is being able to stop and restart the socket connection parts. Some redesign, I think.
 
 - What event scripts will ship with this? Can we do any kind of generic example one like acpid's anything handler? What would anything do?
+
+- Need some basic cli arg handling to respond to --version
