@@ -23,6 +23,10 @@ import Uacpid.Events
 import Uacpid.Log ( initLogging, logM )
 
 
+data RunLevel = HALT | RUN | RESTART
+   deriving Eq
+
+
 openAcpidSocket :: (MonadError String m, MonadIO m) =>
    ConfMap -> m Handle
 openAcpidSocket conf = do
@@ -50,12 +54,43 @@ openAcpidSocket conf = do
    return hdl
 
 
--- Read lines from the socket and do something with them
-listenAcpi :: [Handler] -> MVar Bool -> Handle -> IO ()
-listenAcpi handlers mvRunStatus hdl = do
-   stopNow <- readMVar mvRunStatus
+{- When RunLevel is RESTART, this function sets up the daemon by 
+   loading event handlers and establishing the connection to acpid, 
+   sets the RunLevel to RUN and then starts the listenAcpi loop.
+   Any other RunLevel makes it exit.
+-}
+connectLoop :: ConfMap -> MVar RunLevel -> IO ()
+connectLoop conf mvRunStatus = do
+   logM DEBUG "connectLoop called"
 
-   unless stopNow $ do
+   runStatus <- readMVar mvRunStatus
+
+   when (runStatus == RESTART) $ do
+      handlers <- loadHandlers
+
+      eHdl <- runErrorT $ openAcpidSocket conf
+      either exitFail
+         (\hdl -> do
+            takeMVar mvRunStatus
+            putMVar mvRunStatus RUN
+            listenAcpi handlers mvRunStatus hdl
+         )
+         eHdl
+      connectLoop conf mvRunStatus
+
+
+{- Read lines from the socket and do something with them
+   This function keeps calling itself as long as we're in RunLevel RUN
+   Otherwise it falls back to connectLoop who takes the appropriate 
+   action
+-}
+listenAcpi :: [Handler] -> MVar RunLevel -> Handle -> IO ()
+listenAcpi handlers mvRunStatus hdl = do
+   logM DEBUG "listenAcpi called"
+
+   runStatus <- readMVar mvRunStatus
+
+   when (runStatus == RUN) $ do
       -- No blocking unless the socket is ready with a line for us
       ready <- hReady hdl
       when ready $ do
@@ -68,25 +103,34 @@ listenAcpi handlers mvRunStatus hdl = do
       listenAcpi handlers mvRunStatus hdl
 
 
+{- For a serious error that prevents further execution
+-}
 exitFail :: String -> IO ()
 exitFail errMsg = do
    logM ERROR errMsg
    exitWith $ ExitFailure 1
 
 
-handleExitSignals :: MVar Bool -> IO ()
+{- Handler functions to adjust the RunLevel state based on signals 
+   the daemon may receive
+-}
+
+handleExitSignals :: MVar RunLevel -> IO ()
 handleExitSignals mvRunStatus = do
-   -- We don't care what it is, we just want to take it from everyone else
    takeMVar mvRunStatus
 
    logM NOTICE "uacpid daemon stopped"
 
-   -- Make note in the state to stop the other thread
-   putMVar mvRunStatus True
+   putMVar mvRunStatus HALT
 
 
-handleHupSignal :: IO ()
-handleHupSignal = logM DEBUG "sigHUP received"
+handleHupSignal :: MVar RunLevel -> IO ()
+handleHupSignal mvRunStatus = do
+   takeMVar mvRunStatus
+
+   logM NOTICE "sigHUP received"
+
+   putMVar mvRunStatus RESTART
 
 
 main :: IO ()
@@ -94,20 +138,19 @@ main = do
    conf <- getConf
    initLogging conf
 
-   handlers <- loadHandlers
-
-   mvRunStatus <- newMVar False
+   mvRunStatus <- newMVar RESTART
 
    -- Install signal handlers
    mapM_ (\signal -> installHandler signal 
       (Catch $ handleExitSignals mvRunStatus) Nothing) [sigINT, sigTERM]
-   installHandler sigHUP (Catch handleHupSignal) Nothing
+   installHandler sigHUP (Catch $ handleHupSignal mvRunStatus) Nothing
 
    logM NOTICE "uacpid daemon started"
    logM NOTICE $ "Logging level " ++
       (fromJust $ lookup "logPriority" conf)
 
-   eHdl <- runErrorT $ openAcpidSocket conf
-   either exitFail (listenAcpi handlers mvRunStatus) eHdl
+   -- The looping for events starts here
+   connectLoop conf mvRunStatus
 
+   -- If/when it makes it back here, exit gracefully
    exitWith $ ExitSuccess
