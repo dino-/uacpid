@@ -2,14 +2,14 @@
 
 - Can some of the code in main.hs be factored into other modules? Maybe Uacpid.Signals to start with
 
-- Various types of failures in event handler scripts will generate WARNING priority log messages
-
-- If the event handler script's shell process fails, we need to log the exit code. WARNING priority, of course.
+- If the event handler script's shell process fails, we need to log the exit code. WARNING priority. The real question here is do we have any business waiting for the shell process to come back? Maybe just report on failure to launch?
 
 - This project needs a real man page
-
-- Need signal support for sigHUP. What this means is being able to stop and restart the socket connection parts. Some redesign, I think.
 
 - What event scripts will ship with this? Can we do any kind of generic example one like acpid's anything handler? What would anything do?
 
 - Need some basic cli arg handling to respond to --version
+
+- Would it be possible to have SIGHUP also reload the conf file?
+
+- Some of the junk in trunk/dev/ should be checked in, as kind of the test suite-ish material. Not sure how to do go about this yet, but something must be done.
