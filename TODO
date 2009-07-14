@@ -10,6 +10,4 @@
 
 - Need some basic cli arg handling to respond to --version
 
-- Would it be possible to have SIGHUP also reload the conf file?
-
 - Some of the junk in trunk/dev/ should be checked in, as kind of the test suite-ish material. Not sure how to do go about this yet, but something must be done.
