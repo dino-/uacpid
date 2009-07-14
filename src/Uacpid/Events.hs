@@ -32,7 +32,7 @@ data Handler = Handler
 lookupHandlerE :: (MonadError String m) =>
    String -> String -> ConfMap -> m String
 lookupHandlerE name = lookupEWith
-   (\j -> "Handler handler " ++ name ++ ": key " ++ j ++ " not found")
+   (\j -> "Handler " ++ name ++ ": key " ++ j ++ " not found")
 
 
 loadHandler :: (String, FilePath) -> IO (Maybe Handler)
