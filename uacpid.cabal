@@ -19,7 +19,7 @@ description:         uacpid is a daemon designed to be run in userspace
 category:            System
 tested-with:         GHC>=6.10.3
 data-dir:            resources
-data-files:          default-uacpid.conf
+data-files:          uacpid/uacpid.conf, uacpid/events/anything
 
 executable           uacpid
    main-is:          main.hs

@@ -1,0 +1,13 @@
+# event is a regexp used for matching the raw string that we get from acpid
+# These strings look like:
+#   button/lid LID 00000080 00000002
+#   button/sleep SLPB 00000080 00000001
+#   hotkey ATKD 00000062 00000000
+# See acpid for more info
+event=.*
+
+# action is a shell command that will be executed if the above event 
+# regexp pattern is a match
+# This example using logger will log to local syslog-ng
+# (just as an example)
+action=logger "uacpid event handler: anything"

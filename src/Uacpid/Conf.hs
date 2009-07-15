@@ -61,6 +61,27 @@ getConfDir :: IO String
 getConfDir = liftM (flip (</>) ".uacpid") getHomeDir
 
 
+{- Create the user's home dir .uacpid directory and populate it
+   with default and example files.
+   This happens the first time uacpid is run for a given user
+-}
+initializeConfDir :: FilePath -> FilePath -> IO ()
+initializeConfDir confDir confFilePath = do
+   createDirectoryIfMissing True confDir
+
+   defaultConfFilePath <- getDataFileName $
+      "uacpid" </> "uacpid.conf"
+   copyFile defaultConfFilePath confFilePath
+
+   let eventsDir = confDir </> "events"
+   createDirectory eventsDir
+
+   let exampleAnything = "anything"
+   exampleEventPath <- getDataFileName $
+      "uacpid" </> "events" </> exampleAnything
+   copyFile exampleEventPath $ eventsDir </> exampleAnything
+
+
 getConf :: IO ConfMap
 getConf = do
    -- Construct some paths using $HOME
@@ -68,14 +89,9 @@ getConf = do
    confDir <- getConfDir
    let confFilePath = confDir </> "uacpid.conf"
 
-   -- First time conf directory creation
-   createDirectoryIfMissing True confDir
-
-   -- Create the conf for the first time if necessary
-   confExists <- doesFileExist confFilePath
-   unless confExists $ do
-      defaultConfFilePath <- getDataFileName "default-uacpid.conf"
-      copyFile defaultConfFilePath confFilePath
+   flip unless
+      (initializeConfDir confDir confFilePath)
+      =<< doesDirectoryExist confDir
 
    -- Load the conf
    loadedConf <- liftM parseToMap $ readFile confFilePath
