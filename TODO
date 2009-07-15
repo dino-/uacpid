@@ -1,13 +1,9 @@
-- Make arch PKGBUILD, see cabal2arch
-
 - Can some of the code in main.hs be factored into other modules? Maybe Uacpid.Signals to start with
 
 - If the event handler script's shell process fails, we need to log the exit code. WARNING priority. The real question here is do we have any business waiting for the shell process to come back? Maybe just report on failure to launch?
 
-- This project needs a real man page
-
-- What event scripts will ship with this? Can we do any kind of generic example one like acpid's anything handler? What would anything do?
-
 - Need some basic cli arg handling to respond to --version
 
 - Some of the junk in trunk/dev/ should be checked in, as kind of the test suite-ish material. Not sure how to do go about this yet, but something must be done.
+
+- Need to be careful about when acpid is stopped and the socket goes away on a running uacpid. Must deal with this gracefully. Probably does not at this time.
