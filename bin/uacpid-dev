@@ -1,3 +1,3 @@
 #! /bin/bash
 
-HOME=dev/home dist/build/uacpid/uacpid
+HOME=dev/home dist/build/uacpid/uacpid $*

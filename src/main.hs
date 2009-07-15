@@ -7,11 +7,12 @@
 import Control.Concurrent
 import Control.Concurrent.MVar
 import Control.Monad.Error
-import Data.Map
+import Data.Map hiding ( null )
 import Data.Maybe
 import Prelude hiding ( lookup )
 import Network.Socket
 import System.Directory
+import System.Environment
 import System.Exit
 import System.IO
 import System.Log
@@ -135,6 +136,9 @@ handleHupSignal mvRunStatus = do
 
 main :: IO ()
 main = do
+   -- Any args at all, give the user help and exit
+   getArgs >>= \as -> unless (null as) usageAndExit
+
    conf <- getConf
    initLogging conf
 
@@ -153,4 +157,17 @@ main = do
    connectLoop conf mvRunStatus
 
    -- If/when it makes it back here, exit gracefully
-   exitWith $ ExitSuccess
+   exitWith ExitSuccess
+
+
+usageAndExit :: IO ()
+usageAndExit = do
+   putStrLn $ unlines
+      [ "uacpid - Userspace Advanced Configuration and Power Interface event daemon"
+      , ""
+      , "Please see man uacpid for detailed info"
+      , ""
+      , "Version 0.0.2  2009-Jul-15  Dino Morelli <dino@ui3.info>"
+      ]
+
+   exitWith ExitSuccess
