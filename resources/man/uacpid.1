@@ -1,0 +1,75 @@
+.\" Process this file with
+.\" groff -man -Tascii uacpid.1
+.\"
+.TH UACPID 1 "2009-Jul-14" Linux "User Manuals"
+.SH NAME
+uacpid \- Userspace Advanced Configuration and Power Interface event daemon
+.SH SYNOPSIS
+.B uacpid
+.SH DESCRIPTION
+.B uacpid
+is a daemon designed to be run in userspace that will monitor the local system's
+.B acpid
+socket for hardware events. Since this daemon is run in userspace, event handler processes can utilize the same environment as a normal user.
+
+An example of why you need this: Suppose you want to have a hardware event change the active X displays, like a laptop external monitor function button. Some tools to achieve this display change require the logged in user's DISPLAY and other settings that may be difficult or impossible to gain access to from
+.B acpid
+scripts.
+
+Another example is media control function buttons, like play/pause or next/previous track for a music player.
+
+.B uacpid
+is running as you and is getting the hardware events reported by the system's
+.BR acpid .
+.B uacpid
+can then act on the events on your behalf, with your environment.
+
+.B uacpid
+will respond to SIGHUP by reloading the event handlers and reestablishing its connection to the
+.B acpid
+socket. Changes to the config file will require that
+.B uacpid
+be restarted, SIGHUP will not reload the config.
+
+Note that having
+.B acpid
+installed and running is required to use
+.BR uacpid .
+.SH FILES
+A directory structure and default files under
+.I $HOME/.uacpid/
+will be created the first time the daemon is run.
+
+.I $HOME/.uacpid/uacpid.conf
+.RS
+Configuration file. The default conf file is documented with comments.
+.RE
+.IR $HOME/.uacpid/events/ [ event-handler "] ..."
+.RS
+Event handler files. These are very much like acpid event handler files. An example event handler that matches any event should be here, named
+.I anything
+.SH EXIT STATUS
+.TP
+.B 0
+Normal daemon termination, no error conditions.
+.TP
+.B 1
+Fatal error, terminated abnormally.
+.SH ENVIRONMENT
+.IP HOME
+The HOME environment variable is used to locate or initialize conf and event files (see FILES)
+.SH DIAGNOSTICS
+Error messages and anything else applicable to the log level in effect will be logged. By default the log file will be created at
+.IR $HOME/var/log/uacpid.log .
+These settings are also configurable.
+.SH BUGS
+Probably lots. Please email reports and/or help out!
+.SH EXAMPLE
+A logical way to start the daemon would be backgrounded in your
+.IR $HOME/.xinitrc " or " $HOME/.xsession :
+
+.B uacpid &
+.SH AUTHOR
+Dino Morelli <dino@ui3.info>
+.SH "SEE ALSO"
+.BR acpid (8)
