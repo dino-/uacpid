@@ -1,5 +1,0 @@
-# This is called when the user presses video button
-
-event=hotkey ATKD (00000061||00000062||00000063)
-#action=/usr/local/sbin/acpi/video.sh %e
-action=logger "$(basename $0) DISPLAY=$DISPLAY"
