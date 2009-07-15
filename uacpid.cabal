@@ -24,7 +24,7 @@ data-files:          uacpid/uacpid.conf, uacpid/events/anything
 executable           uacpid
    main-is:          main.hs
    hs-source-dirs:   src
-   build-depends:    base, containers, directory, filepath, hslogger, 
-                     mtl, network, old-locale, process, regex-compat, 
-                     time, unix
+   build-depends:    base >= 3 && < 5, containers, directory, filepath, 
+                     hslogger, mtl, network, old-locale, process, 
+                     regex-compat, time, unix
    ghc-options:      -Wall
