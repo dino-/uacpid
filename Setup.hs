@@ -4,6 +4,7 @@
 -- License: BSD3 (see LICENSE)
 -- Author: Dino Morelli <dino@ui3.info>
 
+import Control.Monad
 import Distribution.Simple
 import Distribution.Simple.LocalBuildInfo
 import System.Cmd
@@ -13,10 +14,11 @@ import System.FilePath
 
 
 main = defaultMainWithHooks (simpleUserHooks 
-   { postInst = customPostInstall
+   { postCopy = copyManPage
+   , postInst = copyManPage
    } )
    where
-      customPostInstall _ _ _ localBuildInfo = do
+      copyManPage _ _ _ localBuildInfo = do
          -- Construct src and dest dirs for copying the man page
          let manFile = "uacpid.1"
          let srcPath = "resources" </> "man" </> manFile
@@ -32,6 +34,8 @@ main = defaultMainWithHooks (simpleUserHooks
 
          createDirectoryIfMissing True destDir
 
+         putStrLn $ "Installing man page in " ++ destDir
+
          let destPath = destDir </> manFile
 
          -- Copy it to the appropriate man directory, based on the
@@ -41,4 +45,7 @@ main = defaultMainWithHooks (simpleUserHooks
          -- gzip the man page
          gzipExitCode <- system $ "gzip -f " ++ destPath
 
-         exitWith gzipExitCode
+         unless (gzipExitCode == ExitSuccess) $
+            putStrLn "Copy of man page failed!"
+
+         return ()
