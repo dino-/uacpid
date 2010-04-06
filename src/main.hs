@@ -5,7 +5,6 @@
 {-# LANGUAGE FlexibleContexts #-}
 
 import Control.Concurrent
-import Control.Concurrent.MVar
 import Control.Monad.Error
 import Data.Map hiding ( null )
 import Data.Maybe
