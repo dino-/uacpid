@@ -11,11 +11,11 @@ import Data.Map hiding ( null )
 import Data.Maybe
 import Prelude hiding ( lookup )
 import Network.Socket
-import System.Directory
 import System.Environment
 import System.Exit
 import System.IO
 import System.Log
+import System.Posix.Files
 import System.Posix.Signals hiding ( Handler )
 
 import Uacpid.Conf
@@ -28,6 +28,10 @@ data RunLevel = HALT | RUN | RESTART
    deriving Eq
 
 
+throwSocketFileError :: (MonadError String m) => String -> m a
+throwSocketFileError msgPrefix = throwError $ msgPrefix ++ " Make sure acpid is installed, is running, and that this path is correct. This config setting is in ~/.uacpid/uacpid.conf under the key acpidSocket"
+
+
 openAcpidSocket :: (MonadError String m, MonadIO m) =>
    ConfMap -> m Handle
 openAcpidSocket conf = do
@@ -35,9 +39,13 @@ openAcpidSocket conf = do
 
    acpidSocketPath <- lookupEString "acpidSocket" conf
 
-   exists <- liftIO $ doesFileExist acpidSocketPath
-   unless exists $
-      throwError $ "Socket " ++ acpidSocketPath ++ " does not exist. Make sure acpid is installed, is running, and that this path is correct. This config setting is in ~/.uacpid/uacpid.conf under the key acpidSocket"
+   pathExists <- liftIO $ fileExist acpidSocketPath
+   unless pathExists $ throwSocketFileError $
+      "File " ++ acpidSocketPath ++ " does not exist."
+
+   pathIsASocket <- liftIO $ liftM isSocket $ getFileStatus acpidSocketPath
+   unless pathIsASocket $ throwSocketFileError $
+      "File " ++ acpidSocketPath ++ " is not a socket."
 
    hdl <- liftIO $ do
       -- Open the UNIX domain socket
