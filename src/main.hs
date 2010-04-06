@@ -79,7 +79,7 @@ connectLoop conf mvRunStatus = do
       eHdl <- runErrorT $ openAcpidSocket conf
       either exitFail
          (\hdl -> do
-            takeMVar mvRunStatus
+            _ <- takeMVar mvRunStatus
             putMVar mvRunStatus RUN
             listenAcpi handlers mvRunStatus hdl
          )
@@ -125,7 +125,7 @@ exitFail errMsg = do
 
 handleExitSignals :: MVar RunLevel -> IO ()
 handleExitSignals mvRunStatus = do
-   takeMVar mvRunStatus
+   _ <- takeMVar mvRunStatus
 
    logM NOTICE "uacpid daemon stopped"
 
@@ -134,7 +134,7 @@ handleExitSignals mvRunStatus = do
 
 handleHupSignal :: MVar RunLevel -> IO ()
 handleHupSignal mvRunStatus = do
-   takeMVar mvRunStatus
+   _ <- takeMVar mvRunStatus
 
    logM NOTICE "sigHUP received"
 
@@ -154,7 +154,8 @@ main = do
    -- Install signal handlers
    mapM_ (\signal -> installHandler signal 
       (Catch $ handleExitSignals mvRunStatus) Nothing) [sigINT, sigTERM]
-   installHandler sigHUP (Catch $ handleHupSignal mvRunStatus) Nothing
+   _ <- installHandler
+      sigHUP (Catch $ handleHupSignal mvRunStatus) Nothing
 
    logM NOTICE "uacpid daemon started"
    logM NOTICE $ "Logging level " ++
