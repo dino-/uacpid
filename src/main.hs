@@ -175,7 +175,7 @@ usageAndExit = do
       , ""
       , "Please see man uacpid for detailed info"
       , ""
-      , "Version 0.0.4  2009-Jul-19  Dino Morelli <dino@ui3.info>"
+      , "Version 1.0.1  Dino Morelli <dino@ui3.info>"
       ]
 
    exitWith ExitSuccess
