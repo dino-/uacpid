@@ -17,7 +17,7 @@ description:         uacpid is a daemon designed to be run in userspace
                      upon by handlers with access to the user's
                      environment.
 category:            System
-tested-with:         GHC>=6.12.1
+tested-with:         GHC>=6.12.3
 data-dir:            resources
 data-files:          uacpid/uacpid.conf, uacpid/events/anything
 
