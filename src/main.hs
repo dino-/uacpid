@@ -107,7 +107,7 @@ listenAcpi handlers mvRunStatus hdl = do
          executeHandlers line handlers
 
       -- Wait a bit, try again
-      threadDelay 250000
+      threadDelay 2000000
       listenAcpi handlers mvRunStatus hdl
 
 
