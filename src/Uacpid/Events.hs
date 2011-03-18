@@ -92,4 +92,4 @@ executeHandlers acpiHandler es = do
    let responders = filter (\e -> isJust $
          matchRegex (mkRegex (evEventRe e)) acpiHandler) es
 
-   mapM_ (runCommand . evAction) responders
+   mapM_ (waitForProcess <=< runCommand . evAction) responders
