@@ -9,5 +9,6 @@ event=.*
 # action is a shell command that will be executed if the above event 
 # regexp pattern is a match
 # This example using logger will log to local syslog-ng
+# You can see these messages in /var/log/messages.log
 # (just as an example)
 action=logger "uacpid event handler: anything"
