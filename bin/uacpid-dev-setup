@@ -14,9 +14,8 @@ echo
 echo "Development environment built and installed"
 
 HOME=$prefix ./dist/build/uacpid/uacpid &
-pid=$!
 sleep 1
-kill $pid
+kill $!
 
 echo
 echo "uacpid daemon run and stopped once to complete installation"
