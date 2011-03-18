@@ -1,0 +1,29 @@
+#! /bin/bash
+
+prefix=/tmp/uacpid-dev
+
+rm -rf $prefix
+
+mkdir $prefix
+
+./Setup.hs configure --prefix=$prefix
+./Setup.hs build
+./Setup.hs install
+
+echo
+echo "Development environment built and installed"
+
+HOME=$prefix ./dist/build/uacpid/uacpid &
+pid=$!
+sleep 1
+kill $pid
+
+echo
+echo "uacpid daemon run and stopped once to complete installation"
+echo
+echo "Development environment has been created and initialized at $prefix"
+echo "You may now edit $prefix/.uacpid/uacpid.conf as necessary"
+echo "and work with event scripts in $prefix/.uacpid/events/"
+echo
+echo "To run the daemon against this development env:"
+echo "./bin/uacpid-dev"

@@ -1,22 +1,16 @@
 Getting started developing:
 
-In order for the conf file code to work correctly in a development setting, what you should do is:
-
-   $ runhaskell Setup.hs configure --prefix=foo
-
-Where foo is some scratch development installation dir, doesn't really matter where.
-
-You must then runhaskell Setup.hs install to copy files there. After which, running will be able to locate default conf which will then allow it to bootstrap the "real" configuration.
+This daemon is designed to make files for itself in ~/.uacpid/ the
+first time it's run. To assist with development, there is a script
+which will build a development installation and execution environment
+in /tmp/uacpid-dev/ for you.
 
 
-Running the daemon in a development setting:
+To initialize for development:
 
-Start this daemon with the helper script in bin/uacpid-dev
-This will use a custom HOME environment that points to dev/home/
-And will keep it from looking at your real $HOME/.uacpid/
+   $ bin/uacpid-dev-setup
 
-Start in developement like this:
-   $ bin/uacpid-dev &
 
-Stop in developement like this, use the full path so only the development execution is killed. Or get the pid and use kill:
-   $ killall dist/build/uacpid/uacpid
+Once that's completed, it can be run like this:
+
+   $ bin/uacpid-dev
