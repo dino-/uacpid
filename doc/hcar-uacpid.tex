@@ -1,30 +1,20 @@
-\documentclass{scrreprt}
-\usepackage{paralist}
-\usepackage{graphicx}
-\usepackage{hcar}
-
-\begin{document}
-
-\begin{hcarentry}{uacpid}
+\begin{hcarentry}{uacpid (Userspace ACPI daemon)}
 \report{Dino Morelli}
 \status{experimental, actively developed}
 \makeheader
 
 uacpid is a daemon designed to be run in userspace that will monitor the local system's acpid socket for hardware events. These events can then be acted upon by handlers with access to the user's environment. Configuration of uacpid closely mimics that of acpid.
 
+Recent development has involved fixing bugs that were leaving zombie processes.
+
 uacpid is available in binary form for Arch Linux through the AUR and can be acquired using darcs or other methods.
 
 \FurtherReading
 \begin{compactitem}
 \item Project page:
-
 \url{http://ui3.info/d/proj/uacpid.html}
 
 \item Source repository:
-
 \texttt{darcs get} \url{http://ui3.info/darcs/uacpid}
 \end{compactitem}
-
 \end{hcarentry}
-
-\end{document}
