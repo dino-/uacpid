@@ -21,6 +21,10 @@ tested-with:         GHC>=6.12.3
 data-dir:            resources
 data-files:          uacpid/uacpid.conf, uacpid/events/anything
 
+source-repository    head
+   type:             darcs
+   location:         http://hub.darcs.net/dino/uacpid
+
 executable           uacpid
    main-is:          main.hs
    hs-source-dirs:   src
