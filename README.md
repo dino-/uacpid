@@ -56,18 +56,18 @@ in /tmp/uacpid-dev/ for you.
 
 To initialize for development:
 
->     $ bin/uacpid-dev-setup
+    $ bin/uacpid-dev-setup
 
 
 Once that's completed, it can be run like this:
 
->     $ bin/uacpid-dev
+    $ bin/uacpid-dev
 
 And once you have it, building the usual way:
 
->     $ cabal configure
->     $ cabal build
->     $ cabal install
+    $ cabal configure
+    $ cabal build
+    $ cabal install
 
 
 ## Installing
