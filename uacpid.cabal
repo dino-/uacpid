@@ -8,7 +8,7 @@ copyright:           2009, 2010 Dino Morelli
 author:              Dino Morelli
 maintainer:          Dino Morelli <dino@ui3.info>
 stability:           experimental
-homepage:            http://ui3.info/d/proj/uacpid.html
+homepage:            http://hub.darcs.net/dino/uacpid
 synopsis:            Userspace Advanced Configuration and Power Interface 
                      event daemon
 description:         uacpid is a daemon designed to be run in userspace 
