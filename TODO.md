@@ -1,4 +1,3 @@
-- Replace boringfile with a modern one
 - Remove copyright from sources
 - Move copyright up to 2015
 - Can some of the code in `main.hs` be factored into other
