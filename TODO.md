@@ -1,5 +1,8 @@
+- Change version to 1.1
 - Remove copyright from sources
 - Move copyright up to 2015
+- Replace deprecated ErrorT with ExceptT
+- Fix defaultTimeLocale import problem
 - Can some of the code in `main.hs` be factored into other
   modules? Maybe Uacpid.Signals to start with
 - If the event handler script's shell process fails, we need to log
@@ -16,3 +19,5 @@
 - Add version number output to logging when daemon is started
 - Need to develop a simulator event server to use for automated
   testing and development
+- Could use some unit tests (see simulator above also for other
+  tests)
