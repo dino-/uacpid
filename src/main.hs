@@ -8,6 +8,7 @@ import Control.Concurrent
 import Control.Monad.Error
 import Data.Map hiding ( null )
 import Data.Maybe
+import Data.Version ( showVersion )
 import Prelude hiding ( lookup )
 import Network.Socket
 import System.Environment
@@ -17,6 +18,7 @@ import System.Log
 import System.Posix.Files
 import System.Posix.Signals hiding ( Handler )
 
+import Paths_uacpid ( version )
 import Uacpid.Conf
 import Uacpid.Control.Monad.Error
 import Uacpid.Events
@@ -175,7 +177,7 @@ usageAndExit = do
       , ""
       , "Please see man uacpid for detailed info"
       , ""
-      , "Version 1.0.3.0  Dino Morelli <dino@ui3.info>"
+      , "Version " ++ (showVersion version) ++ "  Dino Morelli <dino@ui3.info>"
       ]
 
    exitWith ExitSuccess
