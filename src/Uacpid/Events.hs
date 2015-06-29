@@ -7,7 +7,7 @@ module Uacpid.Events
    ( Handler (..), loadHandlers, executeHandlers )
    where
 
-import Control.Monad.Error
+import Control.Monad.Except
 import Data.List
 import Data.Maybe
 import System.Directory
@@ -17,7 +17,7 @@ import System.Process
 import Text.Regex ( matchRegex, mkRegex )
 
 import Uacpid.Conf ( ConfMap, getConfDir, parseToMap )
-import Uacpid.Control.Monad.Error
+import Uacpid.Control.Monad.Except
 import Uacpid.Log ( logM )
 
 
@@ -40,7 +40,7 @@ loadHandler (name, path) = do
    evMap <- liftM parseToMap $ readFile path
 
    -- Extract data from it to make an Handler, with error reporting
-   eitherStringHandler <- runErrorT $ do
+   eitherStringHandler <- runExceptT $ do
       event <- lookupHandlerE name "event" evMap
       action <- lookupHandlerE name "action" evMap
       return $ Handler name event action

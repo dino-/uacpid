@@ -8,13 +8,13 @@
    (MonadError e a) actions plus functions for expressing Data.Map 
    lookups as MonadError actions
 -}
-module Uacpid.Control.Monad.Error
+module Uacpid.Control.Monad.Except
    ( maybeThrow
    , lookupEWith, lookupEString
    )
    where
 
-import Control.Monad.Error
+import Control.Monad.Except
 import Data.Map hiding ( map )
 import Prelude hiding ( lookup )
 
@@ -45,4 +45,4 @@ lookupEWith f k m = maybeThrow (f k) $ lookup k m
 lookupEString :: (MonadError String m) =>
                  String -> Map String a -> m a
 lookupEString =
-   lookupEWith (\j -> "Key " ++ j ++ " not found")
+   lookupEWith (\k -> "Key " ++ k ++ " not found")

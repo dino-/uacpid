@@ -1,4 +1,3 @@
-- Replace deprecated ErrorT with ExceptT
 - Can some of the code in `main.hs` be factored into other
   modules? Maybe Uacpid.Signals to start with
 - If the event handler script's shell process fails, we need to log

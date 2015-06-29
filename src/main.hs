@@ -4,7 +4,7 @@
 {-# LANGUAGE FlexibleContexts #-}
 
 import Control.Concurrent
-import Control.Monad.Error
+import Control.Monad.Except
 import Data.Map hiding ( null )
 import Data.Maybe
 import Data.Version ( showVersion )
@@ -19,7 +19,7 @@ import System.Posix.Signals hiding ( Handler )
 
 import Paths_uacpid ( version )
 import Uacpid.Conf
-import Uacpid.Control.Monad.Error
+import Uacpid.Control.Monad.Except
 import Uacpid.Events
 import Uacpid.Log ( initLogging, logM )
 
@@ -77,7 +77,7 @@ connectLoop conf mvRunStatus = do
    when (runStatus == RESTART) $ do
       handlers <- loadHandlers
 
-      eHdl <- runErrorT $ openAcpidSocket conf
+      eHdl <- runExceptT $ openAcpidSocket conf
       either exitFail
          (\hdl -> do
             _ <- takeMVar mvRunStatus
