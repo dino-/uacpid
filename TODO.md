@@ -1,4 +1,3 @@
-- Move copyright up to 2015
 - Replace deprecated ErrorT with ExceptT
 - Fix defaultTimeLocale import problem
 - Can some of the code in `main.hs` be factored into other
