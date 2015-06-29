@@ -1,3 +1,13 @@
+1.1 (2015-06-28)
+
+   * Replaced deprecated Control.Monad.ErrorT with ExceptT
+   * Fixed defaultTimeLocale import problem
+   * Now getting version from cabal info using Paths_ code
+   * Updated cabal info
+   * Moved copyright date up to 2015
+   * Adjustments to documentation
+
+
 1.0.3.0 (2011-03-18)
 
    * Fixed code that was leaving zombie child processes by not
