@@ -1,4 +1,3 @@
-- Remove copyright from sources
 - Move copyright up to 2015
 - Replace deprecated ErrorT with ExceptT
 - Fix defaultTimeLocale import problem
