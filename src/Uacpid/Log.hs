@@ -22,8 +22,8 @@ import Uacpid.Conf
 
 -- Format the time right now given a formatting string
 formattedDate :: String -> IO String
-formattedDate formatString =
-   liftM (formatTime defaultTimeLocale formatString)
+formattedDate formatString' =
+   liftM (formatTime defaultTimeLocale formatString')
       $ getCurrentTime >>= utcToLocalZonedTime
 
 
