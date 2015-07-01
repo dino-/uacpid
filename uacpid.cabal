@@ -46,7 +46,7 @@ executable           uacpid
                      , directory
                      , filepath
                      , hslogger
-                     , mtl
+                     , mtl >= 2.2.1
                      , network
                      , process
                      , regex-compat
