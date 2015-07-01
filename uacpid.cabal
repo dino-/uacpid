@@ -48,10 +48,10 @@ executable           uacpid
                      , hslogger
                      , mtl
                      , network
-                     , old-locale
                      , process
                      , regex-compat
                      , time
+                     , time-locale-compat
                      , unix
    hs-source-dirs:   src
    other-modules:    Uacpid.Conf
