@@ -1,3 +1,10 @@
+1.2 (2015-06-30)
+
+   * Simplified some config error handling
+   * Decided to not force time >= 1.5 for now
+   * Reformatted cabal file a bit
+
+
 1.1 (2015-06-28)
 
    * Replaced deprecated Control.Monad.ErrorT with ExceptT
