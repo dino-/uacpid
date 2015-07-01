@@ -41,9 +41,18 @@ source-repository    head
 
 executable           uacpid
    main-is:          main.hs
-   build-depends:    base >= 3 && < 5, containers, directory, filepath, 
-                     hslogger, mtl, network, old-locale, process, 
-                     regex-compat, time, unix
+   build-depends:      base >= 3 && < 5
+                     , containers
+                     , directory
+                     , filepath
+                     , hslogger
+                     , mtl
+                     , network
+                     , old-locale
+                     , process
+                     , regex-compat
+                     , time
+                     , unix
    hs-source-dirs:   src
    other-modules:    Uacpid.Conf
                      Uacpid.Control.Monad.Except
