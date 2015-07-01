@@ -55,7 +55,6 @@ executable           uacpid
                      , unix
    hs-source-dirs:   src
    other-modules:    Uacpid.Conf
-                     Uacpid.Control.Monad.Except
                      Uacpid.Events
                      Uacpid.Log
    ghc-options:      -Wall

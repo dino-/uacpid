@@ -19,7 +19,6 @@ import System.Posix.Signals hiding ( Handler )
 
 import Paths_uacpid ( version )
 import Uacpid.Conf
-import Uacpid.Control.Monad.Except
 import Uacpid.Events
 import Uacpid.Log ( initLogging, logM )
 
@@ -32,12 +31,16 @@ throwSocketFileError :: (MonadError String m) => String -> m a
 throwSocketFileError msgPrefix = throwError $ msgPrefix ++ " Make sure acpid is installed, is running, and that this path is correct. This config setting is in ~/.uacpid/uacpid.conf under the key acpidSocket"
 
 
+lookupE :: (MonadError String m) => String -> Map String a -> m a
+lookupE k m = maybe (throwError $ "Missing key: " ++ k) return $ lookup k m
+
+
 openAcpidSocket :: (MonadError String m, MonadIO m) =>
    ConfMap -> m Handle
 openAcpidSocket conf = do
    liftIO $ logM NOTICE "Establishing connection to acpid's socket..."
 
-   acpidSocketPath <- lookupEString "acpidSocket" conf
+   acpidSocketPath <- lookupE "acpidSocket" conf
 
    pathExists <- liftIO $ fileExist acpidSocketPath
    unless pathExists $ throwSocketFileError $

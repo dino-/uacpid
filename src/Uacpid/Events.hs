@@ -9,6 +9,7 @@ module Uacpid.Events
 
 import Control.Monad.Except
 import Data.List
+import qualified Data.Map as M
 import Data.Maybe
 import System.Directory
 import System.FilePath
@@ -17,7 +18,6 @@ import System.Process
 import Text.Regex ( matchRegex, mkRegex )
 
 import Uacpid.Conf ( ConfMap, getConfDir, parseToMap )
-import Uacpid.Control.Monad.Except
 import Uacpid.Log ( logM )
 
 
@@ -30,8 +30,9 @@ data Handler = Handler
 
 lookupHandlerE :: (MonadError String m) =>
    String -> String -> ConfMap -> m String
-lookupHandlerE name = lookupEWith
-   (\j -> "Handler " ++ name ++ ": key " ++ j ++ " not found")
+lookupHandlerE name k m = maybe
+   (throwError $ "Handler " ++ name ++ ": key " ++ k ++ " not found")
+   return $ M.lookup k m
 
 
 loadHandler :: (String, FilePath) -> IO (Maybe Handler)
