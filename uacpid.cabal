@@ -36,8 +36,8 @@ extra-source-files:  bin/uacpid-dev
                      util/prefs/boring
 
 source-repository    head
-   type:             darcs
-   location:         http://hub.darcs.net/dino/uacpid
+   type:             git
+   location:         https://github.com/dino-/uacpid.git
 
 executable           uacpid
    main-is:          main.hs

@@ -43,8 +43,8 @@ Note that uacpid requires acpid. It must be installed and running.
 
 - Download the cabalized source package [from Hackage](http://hackage.haskell.org/package/uacpid)
 - epub-tools is available for Arch Linux [from the AUR](https://aur.archlinux.org/packages/uacpid/)
-- Get the source with darcs: `$ darcs get http://hub.darcs.net/dino/uacpid`
-- If you're just looking, [browse the source](http://hub.darcs.net/dino/uacpid)
+- Get the source with darcs: `$ git clone https://github.com/dino-/uacpid.git`
+- If you're just looking, [browse the source](https://github.com/dino-/uacpid)
 
 Getting started developing:
 
